@@ -3,11 +3,16 @@ package net.wxam.persistentworkbench.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.wxam.persistentworkbench.menu.WorkbenchMenu;
+import org.jetbrains.annotations.Nullable;
 
 public class WorkbenchBlockEntity extends BlockEntity implements Container {
 
@@ -54,10 +59,30 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
         return stack;
     }
 
+    private AbstractContainerMenu linkedMenu = null;
+
+    public void setLinkedMenu(AbstractContainerMenu menu) {
+        this.linkedMenu = menu;
+        if (linked) syncFromLinked();
+    }
+
     @Override
     public void setItem(int slot, ItemStack stack) {
         items[slot] = stack;
         setChanged();
+        if (linkedMenu != null) {
+            linkedMenu.slotsChanged(this);
+        }
+        // Sync naar de andere bench
+        if (linked && linkedPos != null && level != null) {
+            if (level.getBlockEntity(linkedPos) instanceof WorkbenchBlockEntity other) {
+                other.items[slot] = stack.copy();
+                other.setChanged();
+                if (other.linkedMenu != null) {
+                    other.linkedMenu.slotsChanged(other);
+                }
+            }
+        }
     }
 
     @Override
@@ -81,6 +106,10 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
                 tag.put("slot_" + i, items[i].save(registries));
             }
         }
+        tag.putBoolean("linked", linked);
+        if (linkedPos != null) {
+            tag.putLong("linkedPos", linkedPos.asLong());
+        }
     }
 
     @Override
@@ -90,8 +119,71 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
             if (tag.contains("slot_" + i)) {
                 items[i] = ItemStack.parseOptional(registries, tag.getCompound("slot_" + i));
             } else {
-                items[i]= ItemStack.EMPTY;
+                items[i] = ItemStack.EMPTY;
             }
+        }
+        linked = tag.getBoolean("linked");
+        if (tag.contains("linkedPos")) {
+            linkedPos = BlockPos.of(tag.getLong("linkedPos"));
+        }
+    }
+
+    public MenuProvider getMenuProvider() {
+        return new MenuProvider() {
+            @Override
+            public Component getDisplayName() {
+                return linked
+                        ? Component.translatable("block.persistentworkbench.workbench_linked")
+                        : Component.translatable("block.persistentworkbench.workbench");
+            }
+
+            @Override
+            public @Nullable AbstractContainerMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory inventory, Player player) {
+                return new WorkbenchMenu(containerId, inventory, WorkbenchBlockEntity.this, worldPosition);
+            }
+        };
+    }
+
+    private boolean linked = false;
+    private BlockPos linkedPos = null;
+
+    public boolean isLinked() {
+        return linked;
+    }
+
+    public void setLinked(boolean linked, BlockPos linkedPos) {
+        this.linked = linked;
+        this.linkedPos = linkedPos;
+        setChanged();
+        if (level != null) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    public BlockPos getLinkedPos() {
+        return linkedPos;
+    }
+
+    @Override
+    public net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
+    }
+
+    public void syncFromLinked() {
+        if (!linked || linkedPos == null || level == null) return;
+        if (!(level.getBlockEntity(linkedPos) instanceof WorkbenchBlockEntity other)) return;
+
+        for (int i = 0; i < GRID_SIZE; i++) {
+            items[i] = other.getItem(i).copy();
+        }
+        setChanged();
+        if (linkedMenu != null) {
+            linkedMenu.slotsChanged(this);
         }
     }
 }

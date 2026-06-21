@@ -18,7 +18,7 @@ public class ModBlocks {
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, PersistentWorkbench.MOD_ID);
 
     public static final DeferredBlock<WorkbenchBlock> WORKBENCH =
-            BLOCKS.register("workbench", () -> new WorkbenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE)));
+            BLOCKS.register("workbench", () -> new WorkbenchBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE).noOcclusion()));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<WorkbenchBlockEntity>> WORKBENCH_BE =
             BLOCK_ENTITIES.register("workbench", () -> BlockEntityType.Builder.of(WorkbenchBlockEntity::new, WORKBENCH.get()).build(null));

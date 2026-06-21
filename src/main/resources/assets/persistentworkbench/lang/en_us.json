@@ -1,0 +1,12 @@
+{
+  "block.persistentworkbench.workbench": "Workbench",
+  "block.persistentworkbench.workbench_linked": "Workbench (Linked)",
+  "itemGroup.persistentworkbench": "Persistent Workbench",
+
+  "item.persistentworkbench.link_crystal": "Link Crystal",
+  "item.persistentworkbench.link_crystal.bound": "Link Crystal bound to Workbench!",
+  "item.persistentworkbench.link_crystal.linked": "Workbenches linked!",
+  "item.persistentworkbench.link_crystal.same_block": "Cannot link a Workbench to itself!",
+  "item.persistentworkbench.link_crystal.lost": "Bound Workbench no longer exists, resetting...",
+  "item.persistentworkbench.link_crystal.already_linked": "This Workbench is already linked!"
+}

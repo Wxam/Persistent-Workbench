@@ -13,4 +13,7 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> WORKBENCH =
             ITEMS.registerSimpleBlockItem("workbench", ModBlocks.WORKBENCH);
+
+    public static final DeferredItem<LinkCrystalItem> LINK_CRYTAL =
+            ITEMS.register("link_crystal", LinkCrystalItem::new);
 }
