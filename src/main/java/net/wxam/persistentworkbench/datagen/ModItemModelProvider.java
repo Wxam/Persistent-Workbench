@@ -17,6 +17,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         withExistingParent(ModItems.WORKBENCH.getId().getPath(),
                 modLoc("block/workbench"));
 
-        basicItem(ModItems.LINK_CRYTAL.get());
+        basicItem(ModItems.LINK_CRYSTAL_WAND.get());
+        basicItem(ModItems.LINK_CRYSTAL.get());
     }
 }
