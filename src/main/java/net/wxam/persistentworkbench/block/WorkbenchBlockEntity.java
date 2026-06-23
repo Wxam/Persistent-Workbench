@@ -70,14 +70,19 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
     public void setItem(int slot, ItemStack stack) {
         items[slot] = stack;
         setChanged();
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
         if (linkedMenu != null) {
             linkedMenu.slotsChanged(this);
         }
-        // Sync naar de andere bench
         if (linked && linkedPos != null && level != null) {
             if (level.getBlockEntity(linkedPos) instanceof WorkbenchBlockEntity other) {
                 other.items[slot] = stack.copy();
                 other.setChanged();
+                if (other.level != null && !other.level.isClientSide) {
+                    other.level.sendBlockUpdated(other.worldPosition, other.getBlockState(), other.getBlockState(), 3);
+                }
                 if (other.linkedMenu != null) {
                     other.linkedMenu.slotsChanged(other);
                 }

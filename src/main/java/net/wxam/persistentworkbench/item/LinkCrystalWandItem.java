@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -42,6 +43,9 @@ public class LinkCrystalWandItem extends Item {
             tag.putLong("boundPos", pos.asLong());
             stack.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
 
+            context.getLevel().playSound(null, pos,
+                    net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME,
+                    net.minecraft.sounds.SoundSource.BLOCKS, 1.0f, 1.0f);
             context.getPlayer().displayClientMessage(
                     Component.translatable("item.persistentworkbench.link_crystal.bound"), true);
             return InteractionResult.CONSUME;
@@ -84,9 +88,24 @@ public class LinkCrystalWandItem extends Item {
 
         stack.remove(DataComponents.CUSTOM_DATA);
 
+        if (context.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                    pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                    20, 0.5, 0.5, 0.5, 0.1
+            );
+            serverLevel.sendParticles(
+                    net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                    boundPos.getX() + 0.5, boundPos.getY() + 1.0, boundPos.getZ() + 0.5,
+                    20, 0.5, 0.5, 0.5, 0.1
+            );
+        }
+
+        context.getLevel().playSound(null, pos,
+                net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE,
+                net.minecraft.sounds.SoundSource.BLOCKS, 1.0f, 1.0f);
         context.getPlayer().displayClientMessage(
                 Component.translatable("item.persistentworkbench.link_crystal.linked"), true);
-
         return InteractionResult.CONSUME;
     }
 

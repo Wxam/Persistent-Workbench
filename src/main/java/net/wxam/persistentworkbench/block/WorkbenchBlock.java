@@ -2,6 +2,7 @@ package net.wxam.persistentworkbench.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +28,7 @@ public class WorkbenchBlock extends BaseEntityBlock {
     }
 
     @Override
-    public RenderShape getRenderShape (BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -56,6 +57,10 @@ public class WorkbenchBlock extends BaseEntityBlock {
                 if (workbench.isLinked() && workbench.getLinkedPos() != null) {
                     if (level.getBlockEntity(workbench.getLinkedPos()) instanceof WorkbenchBlockEntity other) {
                         other.setLinked(false, null);
+                        other.clearContent();
+                        level.playSound(null, workbench.getLinkedPos(),
+                                net.minecraft.sounds.SoundEvents.BEACON_DEACTIVATE,
+                                net.minecraft.sounds.SoundSource.BLOCKS, 1.0f, 1.0f);
                     }
                 }
 

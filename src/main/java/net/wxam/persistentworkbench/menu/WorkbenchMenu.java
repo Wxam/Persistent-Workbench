@@ -88,8 +88,6 @@ public class WorkbenchMenu extends AbstractContainerMenu {
                         blockEntity.getItem(6), blockEntity.getItem(7), blockEntity.getItem(8)
                 ));
 
-        PersistentWorkbench.LOGGER.info("Grid: {}", input.items());
-
         level.getRecipeManager()
                 .getRecipeFor(RecipeType.CRAFTING, input, level)
                 .ifPresentOrElse(

@@ -31,8 +31,14 @@ public class PersistentWorkbench {
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(ModItems.WORKBENCH.get());
-            event.accept(ModItems.LINK_CRYSTAL_WAND.get());
-            event.accept(ModItems.LINK_CRYSTAL);
+        }
+
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ModItems.LINK_CRYSTAL.get());
+        }
+
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(ModItems.LINK_CRYSTAL_WAND);
         }
     }
 }
