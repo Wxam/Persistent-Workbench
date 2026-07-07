@@ -30,6 +30,11 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
         }
     }
 
+    public void directSetItem(int slot, ItemStack stack) {
+        items[slot] = stack;
+        setChanged();
+    }
+
     @Override
     public int getContainerSize() {
         return GRID_SIZE;
