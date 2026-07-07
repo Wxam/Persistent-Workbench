@@ -35,10 +35,11 @@ public class WorkbenchRenderer implements BlockEntityRenderer<WorkbenchBlockEnti
 
         net.minecraft.client.Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
         float cameraYaw = camera.getYRot();
+        float snappedYaw = Math.round(cameraYaw / 90f) * 90f;
 
         poseStack.pushPose();
         poseStack.translate(0.5f, 1.13f, 0.5f);
-        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-cameraYaw + 180f));
+        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-snappedYaw + 180f));
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {

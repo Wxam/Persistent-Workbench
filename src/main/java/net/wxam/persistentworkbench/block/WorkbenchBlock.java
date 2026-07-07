@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.wxam.persistentworkbench.PersistentWorkbench;
 
 public class WorkbenchBlock extends BaseEntityBlock {
 
@@ -42,8 +43,13 @@ public class WorkbenchBlock extends BaseEntityBlock {
                                                Player player, BlockHitResult hitResult) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
+        PersistentWorkbench.LOGGER.info("Opening workbench at {}", pos);
+
         if (level.getBlockEntity(pos) instanceof WorkbenchBlockEntity workbench) {
+            PersistentWorkbench.LOGGER.info("BlockEntity found, opening menu");
             player.openMenu(workbench.getMenuProvider(), buf -> buf.writeBlockPos(pos));
+        } else {
+            PersistentWorkbench.LOGGER.info("BlockEntity NOT found!");
         }
 
         return InteractionResult.CONSUME;

@@ -19,6 +19,10 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
     private static final int GRID_SIZE = 9;
     private final ItemStack[] items = new ItemStack[GRID_SIZE];
 
+    private boolean linked = false;
+    private BlockPos linkedPos = null;
+    private WorkbenchMenu linkedMenu = null;
+
     public WorkbenchBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlocks.WORKBENCH_BE.get(), pos, blockState);
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -59,11 +63,11 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
         return stack;
     }
 
-    private AbstractContainerMenu linkedMenu = null;
-
-    public void setLinkedMenu(AbstractContainerMenu menu) {
+    public void setLinkedMenu(WorkbenchMenu menu) {
         this.linkedMenu = menu;
-        if (linked) syncFromLinked();
+        if (menu != null) {
+            menu.syncFromBlockEntity();
+        }
     }
 
     @Override
@@ -74,7 +78,7 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
         }
         if (linkedMenu != null) {
-            linkedMenu.slotsChanged(this);
+            linkedMenu.syncFromBlockEntity();
         }
         if (linked && linkedPos != null && level != null) {
             if (level.getBlockEntity(linkedPos) instanceof WorkbenchBlockEntity other) {
@@ -84,7 +88,7 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
                     other.level.sendBlockUpdated(other.worldPosition, other.getBlockState(), other.getBlockState(), 3);
                 }
                 if (other.linkedMenu != null) {
-                    other.linkedMenu.slotsChanged(other);
+                    other.linkedMenu.syncFromBlockEntity();
                 }
             }
         }
@@ -149,9 +153,6 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
         };
     }
 
-    private boolean linked = false;
-    private BlockPos linkedPos = null;
-
     public boolean isLinked() {
         return linked;
     }
@@ -177,18 +178,5 @@ public class WorkbenchBlockEntity extends BlockEntity implements Container {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         return saveWithoutMetadata(registries);
-    }
-
-    public void syncFromLinked() {
-        if (!linked || linkedPos == null || level == null) return;
-        if (!(level.getBlockEntity(linkedPos) instanceof WorkbenchBlockEntity other)) return;
-
-        for (int i = 0; i < GRID_SIZE; i++) {
-            items[i] = other.getItem(i).copy();
-        }
-        setChanged();
-        if (linkedMenu != null) {
-            linkedMenu.slotsChanged(this);
-        }
     }
 }

@@ -37,6 +37,12 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+    maven {
+        url "https://cursemaven.com"
+    }
+    maven {
+        url "https://api.modrinth.com/maven"
+    }
 }
 
 base {
@@ -138,6 +144,9 @@ dependencies {
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     // at runtime, use the full JEI jar for NeoForge
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    localRuntime("curse.maven:polymorph-388800:6794589")
+    localRuntime("maven.modrinth:only-hammers-and-excavators:5gLdEqaZ")
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository
     // This maps to ./libs/coolmod-${mc_version}-${coolmod_version}.jar

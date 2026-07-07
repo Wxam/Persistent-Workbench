@@ -8,6 +8,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.wxam.persistentworkbench.block.ModBlocks;
 import net.wxam.persistentworkbench.menu.ModMenus;
+import net.wxam.persistentworkbench.menu.WorkbenchMenu;
 import net.wxam.persistentworkbench.screen.WorkbenchRenderer;
 import net.wxam.persistentworkbench.screen.WorkbenchScreen;
 
@@ -20,8 +21,7 @@ public class PersistentWorkbenchClient {
     }
 
     private void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(ModMenus.WORKBENCH_MENU.get(), WorkbenchScreen::new);
-    }
+        event.register(ModMenus.WORKBENCH_MENU.get(), WorkbenchScreen::new);    }
 
     private void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlocks.WORKBENCH_BE.get(), WorkbenchRenderer::new);

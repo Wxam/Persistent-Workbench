@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SCS",
+    " X ",
+    " X "
+  ],
+  "key": {
+    "S": {
+      "item": "minecraft:stone"
+    },
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "minecraft:stone_pickaxe",
+    "count": 1
+  }
+}
