@@ -6,13 +6,18 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.wxam.persistentworkbench.block.WorkbenchBlockEntity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class WorkbenchRenderer implements BlockEntityRenderer<WorkbenchBlockEntity> {
 
     private final ItemRenderer itemRenderer;
+    private static final Map<BlockPos, Float> currentYaws = new HashMap<>();
 
     public WorkbenchRenderer(BlockEntityRendererProvider.Context context) {
         this.itemRenderer = Minecraft.getInstance().getItemRenderer();
@@ -33,13 +38,26 @@ public class WorkbenchRenderer implements BlockEntityRenderer<WorkbenchBlockEnti
 
         float time = (blockEntity.getLevel().getGameTime() + partialTick) / 20f;
 
-        net.minecraft.client.Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        float cameraYaw = camera.getYRot();
-        float snappedYaw = Math.round(cameraYaw / 90f) * 90f;
+        BlockPos pos = blockEntity.getBlockPos();
+        net.minecraft.world.entity.player.Player player = Minecraft.getInstance().player;
+
+        double dx = player.getX() - (pos.getX() + 0.5);
+        double dz = player.getZ() - (pos.getZ() + 0.5);
+        float targetYaw = (float) Math.toDegrees(Math.atan2(dx, dz));
+        float snappedYaw = Math.round(targetYaw / 90f) * 90f;
+
+        float currentYaw = currentYaws.getOrDefault(pos, snappedYaw);
+
+        float diff = snappedYaw - currentYaw;
+        while (diff > 180) diff -= 360;
+        while (diff < -180) diff += 360;
+
+        currentYaw += diff * 0.1f;
+        currentYaws.put(pos, currentYaw);
 
         poseStack.pushPose();
         poseStack.translate(0.5f, 1.13f, 0.5f);
-        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-snappedYaw + 180f));
+        poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(currentYaw));
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {

@@ -7,7 +7,6 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.wxam.persistentworkbench.PersistentWorkbench;
 import net.wxam.persistentworkbench.block.WorkbenchBlockEntity;
 
 public class WorkbenchMenu extends CraftingMenu {
@@ -16,7 +15,7 @@ public class WorkbenchMenu extends CraftingMenu {
     private boolean isSyncing = false;
 
     public WorkbenchMenu(int containerId, Inventory playerInventory, WorkbenchBlockEntity blockEntity, BlockPos pos) {
-        super(containerId, playerInventory, ContainerLevelAccess.NULL);
+        super(containerId, playerInventory, ContainerLevelAccess.create(playerInventory.player.level(), pos));
         this.blockEntity = blockEntity;
 
         isSyncing = true;
@@ -77,9 +76,7 @@ public class WorkbenchMenu extends CraftingMenu {
     @Override
     public void removed(Player player) {
         for (int i = 0; i < 9; i++) {
-            PersistentWorkbench.LOGGER.info("Slot {} before save: {}", i, this.getSlot(i + 1).getItem());
             blockEntity.directSetItem(i, this.getSlot(i + 1).getItem().copy());
-            PersistentWorkbench.LOGGER.info("BlockEntity slot {} after save: {}", i, blockEntity.getItem(i));
         }
         blockEntity.setLinkedMenu(null);
     }

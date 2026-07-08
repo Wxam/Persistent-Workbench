@@ -11,15 +11,13 @@ import net.wxam.persistentworkbench.menu.WorkbenchMenu;
 
 public class WorkbenchScreen extends AbstractContainerScreen<WorkbenchMenu> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace(
-            "textures/gui/container/crafting_table.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
+            PersistentWorkbench.MOD_ID, "textures/gui/workbench.png");
 
     public WorkbenchScreen(WorkbenchMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.imageWidth = 176;
         this.imageHeight = 166;
-        net.minecraft.client.Minecraft.getInstance().execute(() ->
-                PersistentWorkbench.LOGGER.info("WorkbenchScreen constructor called!"));
     }
 
     @Override
